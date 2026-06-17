@@ -10,62 +10,57 @@
   <title>This Time Next Year</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #0d1117; font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; }
+    body { background: #0d1117; font-family: 'Pretendard','Apple SD Gothic Neo','Noto Sans KR',sans-serif; }
     #root { min-height: 100vh; }
     input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(1); }
     @keyframes blink { 0%,100%{opacity:.2;transform:scale(.7)} 50%{opacity:1;transform:scale(1)} }
   </style>
 </head>
 <body>
-  <div id="root"></div>
+  <div id="root"><div style="min-height:100vh;background:#0d1117;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.4);font-size:14px;font-family:sans-serif">로딩 중...</div></div>
 
-  <!-- React & Babel -->
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone@7.23.5/babel.min.js"></script>
 
-  <script type="text/babel">
-    const { useState, useEffect, useRef, useCallback } = React;
-
-    // window.storage polyfill using localStorage
+  <script>
+    // window.storage using localStorage
     window.storage = {
-      get: (key) => {
-        return new Promise((resolve) => {
+      get: function(key) {
+        return new Promise(function(resolve) {
           try {
-            const val = localStorage.getItem('ttny_' + key);
-            if (val !== null) resolve({ key, value: val });
-            else resolve(null);
-          } catch { resolve(null); }
+            var val = localStorage.getItem('ttny_' + key);
+            resolve(val !== null ? { key: key, value: val } : null);
+          } catch(e) { resolve(null); }
         });
       },
-      set: (key, value) => {
-        return new Promise((resolve) => {
-          try {
-            localStorage.setItem('ttny_' + key, value);
-            resolve({ key, value });
-          } catch { resolve(null); }
+      set: function(key, value) {
+        return new Promise(function(resolve) {
+          try { localStorage.setItem('ttny_' + key, String(value)); resolve({ key: key, value: value }); }
+          catch(e) { resolve(null); }
         });
       },
-      delete: (key) => {
-        return new Promise((resolve) => {
-          try {
-            localStorage.removeItem('ttny_' + key);
-            resolve({ key, deleted: true });
-          } catch { resolve(null); }
+      delete: function(key) {
+        return new Promise(function(resolve) {
+          try { localStorage.removeItem('ttny_' + key); resolve({ key: key, deleted: true }); }
+          catch(e) { resolve(null); }
         });
       },
-      list: (prefix) => {
-        return new Promise((resolve) => {
+      list: function(prefix) {
+        return new Promise(function(resolve) {
           try {
-            const keys = Object.keys(localStorage)
-              .filter(k => k.startsWith('ttny_' + (prefix || '')))
-              .map(k => k.replace('ttny_', ''));
-            resolve({ keys });
-          } catch { resolve({ keys: [] }); }
+            var keys = Object.keys(localStorage)
+              .filter(function(k) { return k.startsWith('ttny_' + (prefix || '')); })
+              .map(function(k) { return k.replace('ttny_', ''); });
+            resolve({ keys: keys });
+          } catch(e) { resolve({ keys: [] }); }
         });
       }
     };
+  </script>
 
+  <script type="text/babel" data-presets="react">
+    const { useState, useEffect, useRef, useCallback } = React;
 
 /* ─── utils ─────────────────────────────────────────────────── */
 const toKey = (y, m, d) =>
@@ -161,8 +156,10 @@ async function fetchQuestion(dateKey) {
     body: JSON.stringify({
       model: "claude-sonnet-4-6", max_tokens: 200,
       messages: [{ role: "user", content:
-        `날짜(${dateKey},연중${doy}번째)에 맞는 자기성찰 질문 하나를 한국어로.\n` +
-        `조건:한문장30자이내,일상·관계·성장·감정,쉽게답할수있되생각자극,${doy}를시드로매일다른주제.\n` +
+        `날짜(${dateKey},연중${doy}번째)에 맞는 자기성찰 질문 하나를 한국어로.
+` +
+        `조건:한문장30자이내,일상·관계·성장·감정,쉽게답할수있되생각자극,${doy}를시드로매일다른주제.
+` +
         `JSON만(다른텍스트없이):{"question":"질문","hint":"10자이내힌트"}`
       }],
     }),
@@ -926,14 +923,18 @@ JSON만 응답 (다른 텍스트 없이):
     setShowFin(false);
     setReviewLoading(true);
     // Build report data
-    const taskLines  = day.tasks.map((t) => `${t.done ? "✅" : "⬜"} ${t.text}`).join("\n") || "없음";
-    const evLines    = evs.map((e) => `${getECat(e.category).emoji} ${e.time ? e.time + " " : ""}${e.text}`).join("\n") || "없음";
+    const taskLines  = day.tasks.map((t) => `${t.done ? "✅" : "⬜"} ${t.text}`).join("
+") || "없음";
+    const evLines    = evs.map((e) => `${getECat(e.category).emoji} ${e.time ? e.time + " " : ""}${e.text}`).join("
+") || "없음";
     const expLines   = exp.map((x) => {
       const subs = (x.subItems || []);
       const amt  = subs.length > 0 ? subs.reduce((s, si) => s + Number(si.amount), 0) : Number(x.amount);
       return `${x.optional ? "💸불필요" : "😊필수"} ${getExpCat(x.category).emoji}${x.desc} -${fmt(amt)}원`;
-    }).join("\n") || "없음";
-    const incLines   = inc.map((x) => `${getIncCat(x.category).emoji}${x.desc} +${fmt(x.amount)}원`).join("\n") || "없음";
+    }).join("
+") || "없음";
+    const incLines   = inc.map((x) => `${getIncCat(x.category).emoji}${x.desc} +${fmt(x.amount)}원`).join("
+") || "없음";
     const report = {
       date: dayKey, taskDone: done, taskTotal: total,
       evCount: evs.length, tInc, tExp,
@@ -947,9 +948,14 @@ JSON만 응답 (다른 텍스트 없이):
       const prompt = `다음은 사용자의 하루 기록입니다. 따뜻하고 진심 어린 한국어로 하루를 총평해주세요. 3~4문장으로 간결하게, 잘한 점과 내일을 위한 한마디를 포함해주세요.
 
 날짜: ${dayKey}
-이벤트:\n${evLines}
-할 일: ${done}/${total} 완료\n${taskLines}
-수입: +${fmt(tInc)}원 / 지출: -${fmt(tExp)}원\n${expLines}\n수입:\n${incLines}
+이벤트:
+${evLines}
+할 일: ${done}/${total} 완료
+${taskLines}
+수입: +${fmt(tInc)}원 / 지출: -${fmt(tExp)}원
+${expLines}
+수입:
+${incLines}
 오늘의 질문: ${report.question}
 답변: ${report.questionAnswer || "미작성"}
 감사 일기: ${day.gratitude || "미작성"}
@@ -1959,7 +1965,10 @@ function OPIcTool({ onBack }) {
     const lenGuide = scriptLen==="short" ? "3~4문장" : scriptLen==="medium" ? "5~7문장" : "8~10문장";
     const prompt = `OPIc 시험을 준비하는 한국인을 위해 "${top.label}" 주제의 영어 스크립트를 작성해주세요.
 
-${scriptMyStory ? `[내가 말하고 싶은 내용/경험]\n${scriptMyStory}\n\n위 내용을 바탕으로 자연스럽게 영어로 표현해주세요.` : ""}
+${scriptMyStory ? `[내가 말하고 싶은 내용/경험]
+${scriptMyStory}
+
+위 내용을 바탕으로 자연스럽게 영어로 표현해주세요.` : ""}
 ${scriptKw ? `[포함할 키워드] ${scriptKw}` : ""}
 
 조건:
@@ -1985,7 +1994,11 @@ ${scriptKw ? `[포함할 키워드] ${scriptKw}` : ""}
     const h=[...rpHistory,{role:"user",text:userMsg}];
     setRpHistory(h); setRpLoading(true);
     const top=OPIC_TOPICS.find(t=>t.id===rpTopic);
-    const reply=await callClaude(`You are a friendly OPIc examiner for topic "${top.label}". Continue naturally. 2-3 sentences max.\n\n${h.map(x=>`${x.role==="examiner"?"Examiner":"Me"}: ${x.text}`).join("\n")}\nExaminer:`,120);
+    const reply=await callClaude(`You are a friendly OPIc examiner for topic "${top.label}". Continue naturally. 2-3 sentences max.
+
+${h.map(x=>`${x.role==="examiner"?"Examiner":"Me"}: ${x.text}`).join("
+")}
+Examiner:`,120);
     setRpHistory([...h,{role:"examiner",text:reply.trim()}]);
     setRpLoading(false);
   };
@@ -2087,7 +2100,9 @@ ${scriptKw ? `[포함할 키워드] ${scriptKw}` : ""}
             <div style={OP.scriptLabel}>✏️ 내가 말하고 싶은 내용 <span style={{color:"rgba(255,255,255,0.3)",fontWeight:400}}>(한국어/영어 모두 OK)</span></div>
             <textarea
               style={{...OP.noteTA, minHeight:90, marginBottom:10}}
-              placeholder={"예) 나는 주말마다 한강에서 자전거를 타는 걸 좋아한다.\n퇴근 후엔 주로 유튜브를 보거나 요리를 한다.\n최근에 새로 이사한 동네가 마음에 든다."}
+              placeholder={"예) 나는 주말마다 한강에서 자전거를 타는 걸 좋아한다.
+퇴근 후엔 주로 유튜브를 보거나 요리를 한다.
+최근에 새로 이사한 동네가 마음에 든다."}
               value={scriptMyStory}
               onChange={e=>setScriptMyStory(e.target.value)}
             />
@@ -3379,7 +3394,6 @@ const OP = {
   noteText:     { fontSize:13, color:"rgba(255,255,255,0.75)", lineHeight:"1.7" },
   delBtn:       { background:"transparent", border:"none", color:"rgba(255,255,255,0.2)", fontSize:18, cursor:"pointer", padding:"0 2px" },
 };
-
     ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
   </script>
 </body>
