@@ -142,17 +142,23 @@ const sumOptional = (day) => (day.expenses || []).reduce((s, x) => {
 }, 0);
 /* ─── AI question ───────────────────────────────────────────── */
 async function fetchQuestion(dateKey) {
-    var _a, _b, _c, _d, _e;
     const doy = Math.floor((new Date(dateKey) - new Date(new Date(dateKey).getFullYear(), 0, 0)) / 86400000);
     const promptText = `날짜(${dateKey},연중${doy}번째)에 맞는 자기성찰 질문 하나를 한국어로.\n조건:한문장30자이내,일상·관계·성장·감정,쉽게답할수있되생각자극,${doy}를시드로매일다른주제.\nJSON만(다른텍스트없이):{"question":"질문","hint":"10자이내힌트"}`;
-    const res = await fetch('/api/gemini', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: promptText, maxTokens: 300 })
-    });
-    const data = await res.json();
-    const txt = data.text || "";
-    return JSON.parse(txt.replace(/```json|```/g, "").trim());
+    try {
+        const res = await fetch('/api/gemini', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: promptText, maxTokens: 300 })
+        });
+        const data = await res.json();
+        const txt = (data.text || "").replace(/```json|```/g, "").trim();
+        if (!txt) throw new Error("empty");
+        const parsed = JSON.parse(txt);
+        if (parsed.question) return parsed;
+        throw new Error("no question");
+    } catch(e) {
+        return { question: "오늘 하루 가장 감사한 순간은 무엇인가요?", hint: "작은 것도 OK" };
+    }
 }
 /* ─── storage ───────────────────────────────────────────────── */
 const SKEY = "planner-v6";
@@ -2570,6 +2576,7 @@ const OP = {
     noteText: { fontSize: 13, color: "rgba(255,255,255,0.75)", lineHeight: "1.7" },
     delBtn: { background: "transparent", border: "none", color: "rgba(255,255,255,0.2)", fontSize: 18, cursor: "pointer", padding: "0 2px" },
 };
+// Cache bust: 1781739580
     ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
   </script>
 </body>
