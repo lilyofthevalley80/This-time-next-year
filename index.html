@@ -149,7 +149,7 @@ async function fetchQuestion(dateKey) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ prompt: promptText, maxTokens: 300 })
-    })
+    });
     const data = await res.json();
     const txt = data.text || "";
     return JSON.parse(txt.replace(/```json|```/g, "").trim());
@@ -672,7 +672,7 @@ JSON만 응답 (다른 텍스트 없이):
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ prompt: receiptPrompt, image: base64, mimeType: file.type || 'image/jpeg', maxTokens: 800 })
-            })
+            });
             const _rdata = await res.json();
             const txt = data.text || "";
             const parsed = JSON.parse(txt.replace(/```json|```/g, "").trim());
@@ -751,7 +751,7 @@ JSON만 응답(다른 텍스트 없이): {"review":"총평 내용"}`;
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ prompt: prompt, maxTokens: 300 })
-            })
+            });
             const _rdata = await res.json();
             const txt = data.text || "";
             aiReview = JSON.parse(txt.replace(/```json|```/g, "").trim()).review;
@@ -1844,7 +1844,7 @@ async function fetchWeatherBriefing(city) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ prompt: promptText, maxTokens: 300 })
-    })
+    });
     const data = await res.json();
     const txt = data.text || "";
     return JSON.parse(txt.replace(/```json|```/g, "").trim());
