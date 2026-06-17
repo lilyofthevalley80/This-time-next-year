@@ -26,7 +26,6 @@
     var useRef      = React.useRef;
     var useCallback = React.useCallback;
     var useMemo     = React.useMemo;
-
     window.storage = {
       get: function(key) {
         return new Promise(function(resolve) {
@@ -146,7 +145,7 @@ async function fetchQuestion(dateKey) {
     var _a, _b, _c, _d, _e;
     const doy = Math.floor((new Date(dateKey) - new Date(new Date(dateKey).getFullYear(), 0, 0)) / 86400000);
     const promptText = `날짜(${dateKey},연중${doy}번째)에 맞는 자기성찰 질문 하나를 한국어로.\n조건:한문장30자이내,일상·관계·성장·감정,쉽게답할수있되생각자극,${doy}를시드로매일다른주제.\nJSON만(다른텍스트없이):{"question":"질문","hint":"10자이내힌트"}`;
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyAQ.Ab8RN6JZ3WN5jqVe4PMCeQH6Zk9XHuPGEOcODKn5UWLsEv-u-g`, { method: "POST", headers: { "Content-Type": "application/json" },
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AQ.Ab8RN6JZ3WN5jqVe4PMCeQH6Zk9XHuPGEOcODKn5UWLsEv-u-g`, { method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }],
             generationConfig: { maxOutputTokens: 300, temperature: 0.7 } }) });
     const data = await res.json();
@@ -667,7 +666,7 @@ JSON만 응답 (다른 텍스트 없이):
 - 금액은 숫자만 (원 단위)
 - 합계/소계/부가세 행은 제외
 - 품목이 없거나 영수증이 아니면 {"store":"","items":[]}`;
-            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyAQ.Ab8RN6JZ3WN5jqVe4PMCeQH6Zk9XHuPGEOcODKn5UWLsEv-u-g`, { method: "POST", headers: { "Content-Type": "application/json" },
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AQ.Ab8RN6JZ3WN5jqVe4PMCeQH6Zk9XHuPGEOcODKn5UWLsEv-u-g`, { method: "POST", headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ contents: [{ parts: [
                                 { inline_data: { mime_type: file.type || "image/jpeg", data: base64 } },
                                 { text: receiptPrompt }
@@ -747,7 +746,7 @@ JSON만 응답 (다른 텍스트 없이):
 반성: ${day.reflection || "미작성"}
 
 JSON만 응답(다른 텍스트 없이): {"review":"총평 내용"}`;
-            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyAQ.Ab8RN6JZ3WN5jqVe4PMCeQH6Zk9XHuPGEOcODKn5UWLsEv-u-g`, { method: "POST", headers: { "Content-Type": "application/json" },
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AQ.Ab8RN6JZ3WN5jqVe4PMCeQH6Zk9XHuPGEOcODKn5UWLsEv-u-g`, { method: "POST", headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }],
                     generationConfig: { maxOutputTokens: 300, temperature: 0.7 } }) });
             const _rdata = await res.json();
@@ -1324,10 +1323,10 @@ const DAILY_DATA = [
             { phrase: "More than anything else,", meaning: "무엇보다도,", example: "More than anything else, I value honesty in people.", translation: "무엇보다도, 저는 사람들의 정직함을 중요시해요." },
         ] },
 ];
-var GEMINI_KEY = "AIzaSyAQ.Ab8RN6JZ3WN5jqVe4PMCeQH6Zk9XHuPGEOcODKn5UWLsEv-u-g";
+var GEMINI_KEY = "AQ.Ab8RN6JZ3WN5jqVe4PMCeQH6Zk9XHuPGEOcODKn5UWLsEv-u-g";
 async function callClaude(prompt, maxTokens = 500) {
     var _a, _b, _c, _d, _e;
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyAQ.Ab8RN6JZ3WN5jqVe4PMCeQH6Zk9XHuPGEOcODKn5UWLsEv-u-g`, { method: "POST", headers: { "Content-Type": "application/json" },
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AQ.Ab8RN6JZ3WN5jqVe4PMCeQH6Zk9XHuPGEOcODKn5UWLsEv-u-g`, { method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }],
             generationConfig: { maxOutputTokens: maxTokens, temperature: 0.7 } }) });
     const data = await res.json();
@@ -1837,7 +1836,7 @@ async function fetchWeatherBriefing(city) {
   ]
 }`;
     const promptText = `날짜(${dateKey},연중${doy}번째)에 맞는 자기성찰 질문 하나를 한국어로.\n조건:한문장30자이내,일상·관계·성장·감정,쉽게답할수있되생각자극,${doy}를시드로매일다른주제.\nJSON만(다른텍스트없이):{"question":"질문","hint":"10자이내힌트"}`;
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyAQ.Ab8RN6JZ3WN5jqVe4PMCeQH6Zk9XHuPGEOcODKn5UWLsEv-u-g`, { method: "POST", headers: { "Content-Type": "application/json" },
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AQ.Ab8RN6JZ3WN5jqVe4PMCeQH6Zk9XHuPGEOcODKn5UWLsEv-u-g`, { method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }],
             generationConfig: { maxOutputTokens: 300, temperature: 0.7 } }) });
     const data = await res.json();
