@@ -145,13 +145,13 @@ async function fetchQuestion(dateKey) {
     var _a, _b, _c, _d, _e;
     const doy = Math.floor((new Date(dateKey) - new Date(new Date(dateKey).getFullYear(), 0, 0)) / 86400000);
     const promptText = `날짜(${dateKey},연중${doy}번째)에 맞는 자기성찰 질문 하나를 한국어로.\n조건:한문장30자이내,일상·관계·성장·감정,쉽게답할수있되생각자극,${doy}를시드로매일다른주제.\nJSON만(다른텍스트없이):{"question":"질문","hint":"10자이내힌트"}`;
-    await fetch('/api/gemini', {
+    const res = await fetch('/api/gemini', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ prompt: promptText, maxTokens: 300 })
     })
     const data = await res.json();
-    const txt = ((_e = (_d = (_c = (_b = (_a = data.candidates) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.content) === null || _c === void 0 ? void 0 : _c.parts) === null || _d === void 0 ? void 0 : _d[0]) === null || _e === void 0 ? void 0 : _e.text) || "";
+    const txt = data.text || "";
     return JSON.parse(txt.replace(/```json|```/g, "").trim());
 }
 /* ─── storage ───────────────────────────────────────────────── */
@@ -668,13 +668,13 @@ JSON만 응답 (다른 텍스트 없이):
 - 금액은 숫자만 (원 단위)
 - 합계/소계/부가세 행은 제외
 - 품목이 없거나 영수증이 아니면 {"store":"","items":[]}`;
-            await fetch('/api/gemini', {
+            const res = await fetch('/api/gemini', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ prompt: receiptPrompt, image: base64, mimeType: file.type || 'image/jpeg', maxTokens: 800 })
             })
             const _rdata = await res.json();
-            const txt = ((_e = (_d = (_c = (_b = (_a = _rdata.candidates) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.content) === null || _c === void 0 ? void 0 : _c.parts) === null || _d === void 0 ? void 0 : _d[0]) === null || _e === void 0 ? void 0 : _e.text) || "";
+            const txt = data.text || "";
             const parsed = JSON.parse(txt.replace(/```json|```/g, "").trim());
             const items = (parsed.items || []).map(it => (Object.assign(Object.assign({}, it), { id: Date.now() + Math.random(), optional: false, selected: true })));
             setScanItems(items.length > 0 ? items : []);
@@ -747,13 +747,13 @@ JSON만 응답 (다른 텍스트 없이):
 반성: ${day.reflection || "미작성"}
 
 JSON만 응답(다른 텍스트 없이): {"review":"총평 내용"}`;
-            await fetch('/api/gemini', {
+            const res = await fetch('/api/gemini', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ prompt: prompt, maxTokens: 300 })
             })
             const _rdata = await res.json();
-            const txt = ((_f = (_e = (_d = (_c = (_b = _rdata.candidates) === null || _b === void 0 ? void 0 : _b[0]) === null || _c === void 0 ? void 0 : _c.content) === null || _d === void 0 ? void 0 : _d.parts) === null || _e === void 0 ? void 0 : _e[0]) === null || _f === void 0 ? void 0 : _f.text) || "";
+            const txt = data.text || "";
             aiReview = JSON.parse(txt.replace(/```json|```/g, "").trim()).review;
         }
         catch (_) {
@@ -1328,14 +1328,13 @@ const DAILY_DATA = [
 ];
 var GEMINI_KEY = "AQ.Ab8RN6JZ3WN5jqVe4PMCeQH6Zk9XHuPGEOcODKn5UWLsEv-u-g";
 async function callClaude(prompt, maxTokens = 500) {
-    var _a, _b, _c, _d, _e;
-    await fetch('/api/gemini', {
+    const res = await fetch('/api/gemini', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: prompt, maxTokens: 800 })
-    })
+      body: JSON.stringify({ prompt: prompt, maxTokens: maxTokens })
+    });
     const data = await res.json();
-    return ((_e = (_d = (_c = (_b = (_a = data.candidates) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.content) === null || _c === void 0 ? void 0 : _c.parts) === null || _d === void 0 ? void 0 : _d[0]) === null || _e === void 0 ? void 0 : _e.text) || "";
+    return data.text || "";
 }
 // ── ExpressionCard ──────────────────────────────────────────────
 function ExpressionCard({ expr, idx, dayNum, checked, onToggleCheck }) {
@@ -1841,13 +1840,13 @@ async function fetchWeatherBriefing(city) {
   ]
 }`;
     const promptText = `날짜(${dateKey},연중${doy}번째)에 맞는 자기성찰 질문 하나를 한국어로.\n조건:한문장30자이내,일상·관계·성장·감정,쉽게답할수있되생각자극,${doy}를시드로매일다른주제.\nJSON만(다른텍스트없이):{"question":"질문","hint":"10자이내힌트"}`;
-    await fetch('/api/gemini', {
+    const res = await fetch('/api/gemini', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ prompt: promptText, maxTokens: 300 })
     })
     const data = await res.json();
-    const txt = ((_e = (_d = (_c = (_b = (_a = data.candidates) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.content) === null || _c === void 0 ? void 0 : _c.parts) === null || _d === void 0 ? void 0 : _d[0]) === null || _e === void 0 ? void 0 : _e.text) || "";
+    const txt = data.text || "";
     return JSON.parse(txt.replace(/```json|```/g, "").trim());
 }
 /* ── OutfitCard: 실사 사진 코디 카드 ────────────────────────── */
