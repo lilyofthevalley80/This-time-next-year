@@ -1,7 +1,6 @@
 const GEMINI_KEY = "AQ.Ab8RN6JZ3WN5jqVe4PMCeQH6Zk9XHuPGEOcODKn5UWLsEv-u-g";
 
 export default async function handler(req, res) {
-  // CORS 허용
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -12,7 +11,6 @@ export default async function handler(req, res) {
   try {
     const { prompt, image, mimeType, maxTokens = 800 } = req.body;
 
-    // 이미지 포함 여부에 따라 parts 구성
     const parts = [];
     if (image) parts.push({ inline_data: { mime_type: mimeType || 'image/jpeg', data: image } });
     parts.push({ text: prompt });
@@ -30,9 +28,18 @@ export default async function handler(req, res) {
     );
 
     const data = await response.json();
+    console.log('Gemini status:', response.status);
+    console.log('Gemini response:', JSON.stringify(data).slice(0, 300));
+
+    if (data.error) {
+      console.log('Gemini error:', data.error);
+      return res.status(200).json({ text: '', error: data.error.message });
+    }
+
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
     res.status(200).json({ text });
   } catch (err) {
+    console.log('Handler error:', err.message);
     res.status(500).json({ error: err.message });
   }
 }
