@@ -1,4 +1,4 @@
-const GEMINI_KEY = "AQ.Ab8RN6KfeKIKDgyxSalCS7vFAhhU_GYNlXaRE3Y0JNErHfXgvA";
+const GEMINI_KEY = "AQ.Ab8RN6JsNdco3KxJ6WKAJ1CQtG5AcM5PMA9Dz_9cnLKPYyZiFg";
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
